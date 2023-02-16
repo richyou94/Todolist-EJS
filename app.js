@@ -14,11 +14,19 @@ mongoose.connect("mongodb://localhost:27017/todolistDB", {
   useNewUrlParser: true,
 });
 
+const itemsSchema = {
+  name: {
+    type: String,
+    required: true,
+  },
+};
+
+const Item = mongoose.model("Item", itemsSchema);
 
 app.get("/", function (req, res) {
   let day = date.getDate();
 
-  res.render("list", { listTitle: day, newListItems: items });
+  res.render("list", { listTitle: "Today", newListItems: items });
 });
 
 app.post("/", function (req, res) {
