@@ -77,8 +77,8 @@ app.post("/", function (req, res) {
     item.save();
     res.redirect("/");
   } else {
-    List.findOne({name: listName}, function (err, foundList) {
-      foundList.items.push(itemName);
+    List.findOne({name: listName}, function(err, foundList) {
+      foundList.items.push(item);
       foundList.save();
       res.redirect(`/${listName}`)
     })
@@ -115,7 +115,7 @@ app.get("/:customListName", function (req, res) {
       } else {
         res.render("list", {
           listTitle: listName.name,
-          newListItems: defaultItems,
+          newListItems: listName.items,
         });
       }
     } else {
