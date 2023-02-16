@@ -37,6 +37,13 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
+const listSchema = {
+  name: String,
+  items: [itemsSchema],
+};
+
+const List = mongoose.model("List", listSchema);
+
 app.get("/", function (req, res) {
   Item.find({}, function (err, foundItems) {
     if (err) {
@@ -67,12 +74,42 @@ app.post("/", function (req, res) {
 });
 
 app.post("/delete", function (req, res) {
-  console.log(req.body)
+  const itemId = req.body.checkbox;
+
+  Item.findByIdAndRemove(itemId, function (err) {
+    if (!err) {
+      console.log("Successfully deleted checked Item");
+    } else {
+      console.log(err);
+    }
+  });
+  res.redirect("/");
 });
 
-app.get("/work", function (req, res) {
-  res.render("list", { listTitle: "Work List", newListItems: workItems });
+app.get("/:customListName", function (req, res) {
+  const customListName = req.params.customListName;
+
+  List.findOne({ name: customListName }, function (err, listName) {
+    if (!err) {
+      if (!listName) {
+        const list = new List({
+          name: customListName,
+          items: defaultItems,
+        });
+        list.save();
+        res.redirect(`/${customListName}`);
+      } else {
+        res.render("list", {
+          listTitle: listName.name,
+          newListItems: defaultItems,
+        });
+      }
+    } else {
+      console.log(err);
+    }
+  });
 });
+
 app.get("/about", function (req, res) {
   res.render("about");
 });
